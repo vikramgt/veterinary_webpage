@@ -1,0 +1,73 @@
+CREATE DATABASE VET;
+
+USE VET;
+
+GRANT ALL ON VET.* TO 'vet'@'localhost' IDENTIFIED BY 'vet';
+GRANT ALL ON VET.* TO 'vet'@'127.0.0.1' IDENTIFIED BY 'vet';
+
+CREATE TABLE owners (
+    owner_id INT AUTO_INCREMENT,
+    name VARCHAR(30) NOT NULL,
+    age INT NOT NULL,
+    email_id VARCHAR(30) NOT NULL UNIQUE,
+    password VARCHAR(30) NOT NULL,
+	contact_number CHAR(10) NOT NULL,
+	bdate DATE NOT NULL,
+	gender CHAR NOT NULL,
+    PRIMARY KEY (owner_id)
+);
+
+CREATE TABLE doctors (
+    doctor_id INT AUTO_INCREMENT,
+    name VARCHAR(30) NOT NULL,
+    age INT NOT NULL,
+    email_id VARCHAR(30) NOT NULL UNIQUE,
+    password VARCHAR(30) NOT NULL,
+	contact_number CHAR(10) NOT NULL,
+	bdate DATE NOT NULL,
+	gender CHAR NOT NULL,
+    PRIMARY KEY (doctor_id)
+);
+
+CREATE TABLE pets (
+    pet_id INT AUTO_INCREMENT,
+    name VARCHAR(30) NOT NULL,
+    species_name VARCHAR(30) NOT NULL,
+    age INT NOT NULL,
+	gender CHAR NOT NULL,
+    owner_id INT NOT NULL,
+    PRIMARY KEY (pet_id),
+    FOREIGN KEY (owner_id) REFERENCES owners (owner_id)
+);
+
+CREATE TABLE appointments (
+    appointment_id INT AUTO_INCREMENT,
+    pet_id INT,
+    doctor_id INT,
+    owner_id INT,
+    date_applied DATE,
+    reason VARCHAR(30),
+    date_alloted DATE,
+    status varchar(30),
+    PRIMARY KEY (appointment_id),
+    FOREIGN KEY (pet_id) REFERENCES pets (pet_id),
+    FOREIGN KEY (doctor_id) REFERENCES doctors (doctor_id),
+    FOREIGN KEY (owner_id) REFERENCES owners (owner_id)
+);
+
+CREATE TABLE visits (
+    visited_id INT AUTO_INCREMENT,
+    appointment_id INT,
+    pet_id INT,
+    date_visited DATE,
+    notes varchar(30),
+    PRIMARY KEY (visited_id),
+    FOREIGN KEY (appointment_id) REFERENCES appointments (appointment_id),
+    FOREIGN KEY (pet_id) REFERENCES pets (pet_id)
+);
+
+CREATE TRIGGER `AppointmentAppliedDate` BEFORE INSERT ON `appointments`
+ FOR EACH ROW SET NEW.date_applied = CURRENT_DATE()
+
+CREATE TRIGGER `VisitedDate` BEFORE INSERT ON `visits`
+ FOR EACH ROW SET NEW.date_visited = CURRENT_DATE()
